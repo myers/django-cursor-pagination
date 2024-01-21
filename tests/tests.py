@@ -328,3 +328,25 @@ class TestRelationshipsWithNull(TestCase):
         cursor = self.paginator.cursor(self.items[17])
         page = self.paginator.page(first=2, after=cursor)
         self.assertSequenceEqual(page, [self.items[19], self.items[0]])
+
+
+class TestPostsAllSameFieldValues(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.items = []
+        all_posts_created_at = timezone.now()
+        author = Author.objects.create(name="Ana")  # odd number
+        for i in range(20):
+            post = Post.objects.create(
+                id=i, name="Name %02d" % i, author=author, created=all_posts_created_at
+            )
+            cls.items.append(post)
+        cls.paginator = CursorPaginator(Post.objects.all(), ("-created", "-id"))
+
+    def test_first_page(self):
+        page1 = self.paginator.page(first=2)
+        self.assertSequenceEqual(page1, [self.items[-1], self.items[-2]])
+        after_cursor = page1.after()
+        page2 = self.paginator.page(first=2, after=after_cursor)
+
+        self.assertSequenceEqual(page2, [self.items[-3], self.items[-4]])

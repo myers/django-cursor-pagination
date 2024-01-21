@@ -28,7 +28,7 @@ we require the ordering to be totally determinate instead of using offsets.
 
 ## Installation
 
-```
+```bash
 pip install django-cursor-pagination
 ```
 
@@ -46,9 +46,9 @@ def posts_api(request, after=None):
     paginator = CursorPaginator(qs, ordering=('-created', '-id'))
     page = paginator.page(first=page_size, after=after)
     data = {
-        'objects': [serialize_page(p) for p in page],
-        'has_next_page': page.has_next,
-        'last_cursor': paginator.cursor(page[-1])
+        'objects': [serialize_post(post) for post in page],
+        'has_next_page': page.has_next(),
+        'after': page.after
     }
     return data
 ```
