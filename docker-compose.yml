@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16.1
+    environment:
+      POSTGRES_DB: django-cursor-pagination
+      POSTGRES_USER: django-cursor-pagination
+      POSTGRES_PASSWORD: django-cursor-pagination
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pg_data:
