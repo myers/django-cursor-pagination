@@ -1,7 +1,7 @@
 # Django cursor pagination [![Build Status](https://travis-ci.org/photocrowd/django-cursor-pagination.svg?branch=master)](https://travis-ci.org/photocrowd/django-cursor-pagination)
 
-A cursor based pagination system for Django. Instead of refering to specific
-pages by number, we give every item in the queryset a cursor based on its
+A cursor based pagination system for Django. Instead of referring to specific
+pages by number, we give every item in the QuerySet a cursor based on its
 ordering values. We then ask for subsequent records by asking for records
 *after* the cursor of the last item we currently have. Similarly we can ask for
 records *before* the cursor of the first item to navigate back through the
@@ -48,7 +48,7 @@ def posts_api(request, after=None):
     data = {
         'objects': [serialize_post(post) for post in page],
         'has_next_page': page.has_next(),
-        'after': page.after
+        'after': page.after()
     }
     return data
 ```
