@@ -1,11 +1,11 @@
 DATABASES = {
-    'default': {
-       'ENGINE': 'django.db.backends.postgresql',
-       'NAME': 'django-cursor-pagination',
-       'USER': 'django-cursor-pagination',
-       'PASSWORD': 'django-cursor-pagination',
-       'HOST': 'localhost',
-       'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "django-cursor-pagination",
+        "USER": "django-cursor-pagination",
+        "PASSWORD": "django-cursor-pagination",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
@@ -13,8 +13,8 @@ DATABASES = {
     # }
 }
 
-INSTALLED_APPS = ['tests']
+INSTALLED_APPS = ["tests"]
 
-SECRET_KEY = 'secret'
+SECRET_KEY = "secret"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

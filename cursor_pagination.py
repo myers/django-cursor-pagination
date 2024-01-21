@@ -14,8 +14,9 @@ def reverse_ordering(ordering_tuple):
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
+
     def invert(x):
-        return x[1:] if (x.startswith('-')) else '-' + x
+        return x[1:] if (x.startswith("-")) else "-" + x
 
     return tuple([invert(item) for item in ordering_tuple])
 
@@ -39,7 +40,7 @@ class CursorPage(Sequence):
 
     def has_next(self):
         return self._has_next
-    
+
     def before(self):
         if len(self.items) == 0:
             return None
@@ -57,13 +58,16 @@ class CursorPage(Sequence):
         return self.items.__getitem__(key)
 
     def __repr__(self):
-        return '<Page: [%s%s]>' % (', '.join(repr(i) for i in self.items[:21]), ' (remaining truncated)' if len(self.items) > 21 else '')
+        return "<Page: [%s%s]>" % (
+            ", ".join(repr(i) for i in self.items[:21]),
+            " (remaining truncated)" if len(self.items) > 21 else "",
+        )
 
 
 class CursorPaginator(object):
-    delimiter = '|'
-    none_string = '::None'
-    invalid_cursor_message = _('Invalid cursor')
+    delimiter = "|"
+    none_string = "::None"
+    invalid_cursor_message = _("Invalid cursor")
 
     def __init__(self, queryset, ordering):
         self.queryset = queryset.order_by(*self._nulls_ordering(ordering))
@@ -76,8 +80,8 @@ class CursorPaginator(object):
         """
         nulls_ordering = []
         for key in ordering:
-            is_reversed = key.startswith('-')
-            column = key.lstrip('-')
+            is_reversed = key.startswith("-")
+            column = key.lstrip("-")
             if is_reversed:
                 if from_last:
                     nulls_ordering.append(F(column).desc(nulls_first=True))
@@ -91,8 +95,6 @@ class CursorPaginator(object):
 
         return nulls_ordering
 
-
-
     def page(self, first=None, last=None, after=None, before=None):
         qs = self.queryset
         page_size = first or last
@@ -101,16 +103,18 @@ class CursorPaginator(object):
 
         from_last = last is not None
         if from_last and first is not None:
-            raise ValueError('Cannot process first and last') 
+            raise ValueError("Cannot process first and last")
 
         if after is not None:
             qs = self.apply_cursor(after, qs, from_last=from_last)
         if before is not None:
             qs = self.apply_cursor(before, qs, from_last=from_last, reverse=True)
         if first is not None:
-            qs = qs[:first + 1]
+            qs = qs[: first + 1]
         if last is not None:
-            qs = qs.order_by(*self._nulls_ordering(reverse_ordering(self.ordering), from_last=True))[:last + 1]
+            qs = qs.order_by(
+                *self._nulls_ordering(reverse_ordering(self.ordering), from_last=True)
+            )[: last + 1]
 
         qs = list(qs)
         items = qs[:page_size]
@@ -119,11 +123,11 @@ class CursorPaginator(object):
         has_additional = len(qs) > len(items)
         additional_kwargs = {}
         if first is not None:
-            additional_kwargs['has_next'] = has_additional
-            additional_kwargs['has_previous'] = bool(after)
+            additional_kwargs["has_next"] = has_additional
+            additional_kwargs["has_previous"] = bool(after)
         elif last is not None:
-            additional_kwargs['has_previous'] = has_additional
-            additional_kwargs['has_next'] = bool(before)
+            additional_kwargs["has_previous"] = has_additional
+            additional_kwargs["has_next"] = bool(before)
         return CursorPage(items, self, **additional_kwargs)
 
     def apply_cursor(self, cursor, queryset, from_last, reverse=False):
@@ -149,7 +153,7 @@ class CursorPaginator(object):
         #     (field1 = value1 AND (field2 > value2 OR field2 IS NULL)) OR
         #     (field1 = value1 AND field2 = value2 AND (field3 < value3 IS NULL)).
         #
-        # Keep in mind, NULL is considered the last part of each field's order. 
+        # Keep in mind, NULL is considered the last part of each field's order.
         # We will use `__lt` lookup for `<`,
         # `__gt` for `>` and `__exact` for `=`.
         # (Using case-sensitive comparison as long as
@@ -173,15 +177,20 @@ class CursorPaginator(object):
         filtering = Q()
         q_equality = {}
 
-        position_values = [Value(pos, output_field=TextField()) if pos is not None else None for pos in position]
+        position_values = [
+            Value(pos, output_field=TextField()) if pos is not None else None
+            for pos in position
+        ]
 
         for ordering, value in zip(self.ordering, position_values):
-            is_reversed = ordering.startswith('-')
-            o = ordering.lstrip('-')
+            is_reversed = ordering.startswith("-")
+            o = ordering.lstrip("-")
             if value is None:  # cursor value for the key was NULL
                 key = "{}__isnull".format(o)
-                if from_last is True:  # if from_last & cursor value is NULL, we need to get non Null for the key
-                    q = {key : False}
+                if (
+                    from_last is True
+                ):  # if from_last & cursor value is NULL, we need to get non Null for the key
+                    q = {key: False}
                     q.update(q_equality)
                     filtering |= Q(**q)
 
@@ -194,7 +203,7 @@ class CursorPaginator(object):
 
                 q = Q(**{comparison_key: value})
                 if not from_last:  # if not from_last, NULL values are still candidates
-                     q |= Q(**{"{}__isnull".format(o): True})
+                    q |= Q(**{"{}__isnull".format(o): True})
                 filtering |= (q) & Q(**q_equality)
 
                 equality_key = "{}__exact".format(o)
@@ -205,21 +214,26 @@ class CursorPaginator(object):
     def decode_cursor(self, cursor):
         try:
             # backwarks compatibility
-            if '+' in cursor or '/':
-                cursor = cursor.replace('+', '-').replace('/', '_')
-            orderings = urlsafe_b64decode(cursor.encode('ascii')).decode('utf8')
-            return [ordering if ordering != self.none_string else None for ordering in orderings.split(self.delimiter)]
+            if "+" in cursor or "/":
+                cursor = cursor.replace("+", "-").replace("/", "_")
+            orderings = urlsafe_b64decode(cursor.encode("ascii")).decode("utf8")
+            return [
+                ordering if ordering != self.none_string else None
+                for ordering in orderings.split(self.delimiter)
+            ]
         except (TypeError, ValueError):
             raise InvalidCursor(self.invalid_cursor_message)
 
     def encode_cursor(self, position):
-        encoded = urlsafe_b64encode(self.delimiter.join(position).encode('utf8')).decode('ascii')
+        encoded = urlsafe_b64encode(
+            self.delimiter.join(position).encode("utf8")
+        ).decode("ascii")
         return encoded
 
     def position_from_instance(self, instance):
         position = []
         for order in self.ordering:
-            parts = order.lstrip('-').split('__')
+            parts = order.lstrip("-").split("__")
             attr = instance
             while parts:
                 attr = getattr(attr, parts[0])
@@ -232,4 +246,3 @@ class CursorPaginator(object):
 
     def cursor(self, instance):
         return self.encode_cursor(self.position_from_instance(instance))
-
