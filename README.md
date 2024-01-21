@@ -26,7 +26,6 @@ pagination.](https://github.com/tomchristie/django-rest-framework/blob/9b56dda91
 The main difference between the Disqus approach and the one used here is that
 we require the ordering to be totally determinate instead of using offsets.
 
-
 ## Installation
 
 ```
@@ -34,7 +33,6 @@ pip install django-cursor-pagination
 ```
 
 ## Usage
-
 
 ```python
 from cursor_pagination import CursorPaginator
@@ -66,7 +64,15 @@ to `paginator.page`.
   `True`.
 - `NULL` comes at the end in query results with `ORDER BY` both for `ASC` and `DESC`.
 
-# Running tests
+## Developing
+
+1. clone this repo
+1. install pre-commit.  If you have [mise](https://github.com/jdx/mise) you can install with `mise install`
+1. `pre-commit install`
+
+Now each change will be formatted with black.
+
+## Running tests
 
 ```bash
 docker compose up -d # start postgres server
