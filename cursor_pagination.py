@@ -1,4 +1,4 @@
-from base64 import b64decode, b64encode
+from base64 import urlsafe_b64decode, urlsafe_b64encode
 from collections.abc import Sequence
 
 from django.db.models import F, Q, TextField, Value
@@ -181,13 +181,16 @@ class CursorPaginator(object):
 
     def decode_cursor(self, cursor):
         try:
-            orderings = b64decode(cursor.encode('ascii')).decode('utf8')
+            # backwarks compatibility
+            if '+' in cursor or '/':
+                cursor = cursor.replace('+', '-').replace('/', '_')
+            orderings = urlsafe_b64decode(cursor.encode('ascii')).decode('utf8')
             return [ordering if ordering != self.none_string else None for ordering in orderings.split(self.delimiter)]
         except (TypeError, ValueError):
             raise InvalidCursor(self.invalid_cursor_message)
 
     def encode_cursor(self, position):
-        encoded = b64encode(self.delimiter.join(position).encode('utf8')).decode('ascii')
+        encoded = urlsafe_b64encode(self.delimiter.join(position).encode('utf8')).decode('ascii')
         return encoded
 
     def position_from_instance(self, instance):
