@@ -1,5 +1,4 @@
-Django cursor pagination [![Build Status](https://travis-ci.org/photocrowd/django-cursor-pagination.svg?branch=master)](https://travis-ci.org/photocrowd/django-cursor-pagination)
-========================
+# Django cursor pagination [![Build Status](https://travis-ci.org/photocrowd/django-cursor-pagination.svg?branch=master)](https://travis-ci.org/photocrowd/django-cursor-pagination)
 
 A cursor based pagination system for Django. Instead of refering to specific
 pages by number, we give every item in the queryset a cursor based on its
@@ -28,15 +27,14 @@ The main difference between the Disqus approach and the one used here is that
 we require the ordering to be totally determinate instead of using offsets.
 
 
-Installation
-------------
+## Installation
 
 ```
 pip install django-cursor-pagination
 ```
 
-Usage
------
+## Usage
+
 
 ```python
 from cursor_pagination import CursorPaginator
@@ -60,11 +58,18 @@ def posts_api(request, after=None):
 Reverse pagination can be achieved by using the `last` and `before` arguments
 to `paginator.page`.
 
-Caveats
--------
+## Caveats
 
 - The ordering specified **must** uniquely identify the object.
 - If a cursor is given and it does not refer to a valid object, the values of
   `has_previous` (for `after`) or `has_next` (for `before`) will always return
   `True`.
 - `NULL` comes at the end in query results with `ORDER BY` both for `ASC` and `DESC`.
+
+# Running tests
+
+```bash
+docker compose up -d # start postgres server
+poetry install # install django and postgres client
+poetry run ./runtests.py
+```
