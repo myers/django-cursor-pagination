@@ -137,7 +137,7 @@ class CursorPaginator(object):
         # Assume comparing 3-tuples a and b,
         # the comparison a < b is equivalent to:
         # (a.0 < b.0) || (a.0 == b.0 && (a.1 < b.1)) || (a.0 == b.0 && a.1 == b.1 && (a.2 < b.2))
-        # The expression above does not depend on short-circuit evalution support,
+        # The expression above does not depend on short-circuit evaluation support,
         # which is usually unavailable on backend RDB
 
         # In order to reflect that in DB query,
@@ -213,7 +213,7 @@ class CursorPaginator(object):
 
     def decode_cursor(self, cursor):
         try:
-            # backwarks compatibility
+            # backwards compatibility
             if "+" in cursor or "/":
                 cursor = cursor.replace("+", "-").replace("/", "_")
             orderings = urlsafe_b64decode(cursor.encode("ascii")).decode("utf8")
