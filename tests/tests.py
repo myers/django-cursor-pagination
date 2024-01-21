@@ -15,8 +15,8 @@ class TestNoArgs(TestCase):
         paginator = CursorPaginator(Post.objects.all(), ('id',))
         page = paginator.page()
         self.assertEqual(len(page), 0)
-        self.assertFalse(page.has_next)
-        self.assertFalse(page.has_previous)
+        self.assertFalse(page.has_next())
+        self.assertFalse(page.has_previous())
 
     def test_with_items(self):
         for i in range(20):
@@ -24,8 +24,8 @@ class TestNoArgs(TestCase):
         paginator = CursorPaginator(Post.objects.all(), ('id',))
         page = paginator.page()
         self.assertEqual(len(page), 20)
-        self.assertFalse(page.has_next)
-        self.assertFalse(page.has_previous)
+        self.assertFalse(page.has_next())
+        self.assertFalse(page.has_previous())
 
 
 class TestForwardPagination(TestCase):
@@ -42,32 +42,32 @@ class TestForwardPagination(TestCase):
     def test_first_page(self):
         page = self.paginator.page(first=2)
         self.assertSequenceEqual(page, [self.items[0], self.items[1]])
-        self.assertTrue(page.has_next)
-        self.assertFalse(page.has_previous)
+        self.assertTrue(page.has_next())
+        self.assertFalse(page.has_previous())
 
     def test_second_page(self):
         previous_page = self.paginator.page(first=2)
         cursor = self.paginator.cursor(previous_page[-1])
         page = self.paginator.page(first=2, after=cursor)
         self.assertSequenceEqual(page, [self.items[2], self.items[3]])
-        self.assertTrue(page.has_next)
-        self.assertTrue(page.has_previous)
+        self.assertTrue(page.has_next())
+        self.assertTrue(page.has_previous())
 
     def test_last_page(self):
         previous_page = self.paginator.page(first=18)
         cursor = self.paginator.cursor(previous_page[-1])
         page = self.paginator.page(first=2, after=cursor)
         self.assertSequenceEqual(page, [self.items[18], self.items[19]])
-        self.assertFalse(page.has_next)
-        self.assertTrue(page.has_previous)
+        self.assertFalse(page.has_next())
+        self.assertTrue(page.has_previous())
 
     def test_incomplete_last_page(self):
         previous_page = self.paginator.page(first=18)
         cursor = self.paginator.cursor(previous_page[-1])
         page = self.paginator.page(first=100, after=cursor)
         self.assertSequenceEqual(page, [self.items[18], self.items[19]])
-        self.assertFalse(page.has_next)
-        self.assertTrue(page.has_previous)
+        self.assertFalse(page.has_next())
+        self.assertTrue(page.has_previous())
 
 
 class TestBackwardsPagination(TestCase):
@@ -84,32 +84,32 @@ class TestBackwardsPagination(TestCase):
     def test_first_page(self):
         page = self.paginator.page(last=2)
         self.assertSequenceEqual(page, [self.items[18], self.items[19]])
-        self.assertTrue(page.has_previous)
-        self.assertFalse(page.has_next)
+        self.assertTrue(page.has_previous())
+        self.assertFalse(page.has_next())
 
     def test_second_page(self):
         previous_page = self.paginator.page(last=2)
         cursor = self.paginator.cursor(previous_page[0])
         page = self.paginator.page(last=2, before=cursor)
         self.assertSequenceEqual(page, [self.items[16], self.items[17]])
-        self.assertTrue(page.has_previous)
-        self.assertTrue(page.has_next)
+        self.assertTrue(page.has_previous())
+        self.assertTrue(page.has_next())
 
     def test_last_page(self):
         previous_page = self.paginator.page(last=18)
         cursor = self.paginator.cursor(previous_page[0])
         page = self.paginator.page(last=2, before=cursor)
         self.assertSequenceEqual(page, [self.items[0], self.items[1]])
-        self.assertFalse(page.has_previous)
-        self.assertTrue(page.has_next)
+        self.assertFalse(page.has_previous())
+        self.assertTrue(page.has_next())
 
     def test_incomplete_last_page(self):
         previous_page = self.paginator.page(last=18)
         cursor = self.paginator.cursor(previous_page[0])
         page = self.paginator.page(last=100, before=cursor)
         self.assertSequenceEqual(page, [self.items[0], self.items[1]])
-        self.assertFalse(page.has_previous)
-        self.assertTrue(page.has_next)
+        self.assertFalse(page.has_previous())
+        self.assertTrue(page.has_next())
 
 
 class TestTwoFieldPagination(TestCase):
@@ -185,8 +185,8 @@ class TestNoArgsWithNull(TestCase):
         paginator = CursorPaginator(Author.objects.all(), ('-age', 'id',))
         page = paginator.page()
         self.assertSequenceEqual(page, [authors[3], authors[0], authors[1], authors[2]])
-        self.assertFalse(page.has_next)
-        self.assertFalse(page.has_previous)
+        self.assertFalse(page.has_next())
+        self.assertFalse(page.has_previous())
 
 
 class TestForwardNullPagination(TestCase):
@@ -208,24 +208,24 @@ class TestForwardNullPagination(TestCase):
     def test_first_page(self):
         page = self.paginator.page(first=3)
         self.assertSequenceEqual(page, [self.items[1], self.items[0], self.items[2]])
-        self.assertTrue(page.has_next)
-        self.assertFalse(page.has_previous)
+        self.assertTrue(page.has_next())
+        self.assertFalse(page.has_previous())
 
     def test_second_page(self):
         previous_page = self.paginator.page(first=3)
         cursor = self.paginator.cursor(previous_page[-1])
         page = self.paginator.page(first=2, after=cursor)
         self.assertSequenceEqual(page, [self.items[3], self.items[4]])
-        self.assertTrue(page.has_next)
-        self.assertTrue(page.has_previous)
+        self.assertTrue(page.has_next())
+        self.assertTrue(page.has_previous())
 
     def test_last_page(self):
         previous_page = self.paginator.page(first=5)
         cursor = self.paginator.cursor(previous_page[-1])
         page = self.paginator.page(first=10, after=cursor)
         self.assertSequenceEqual(page, [self.items[5], self.items[6]])
-        self.assertFalse(page.has_next)
-        self.assertTrue(page.has_previous)
+        self.assertFalse(page.has_next())
+        self.assertTrue(page.has_previous())
 
 
 class TestBackwardsNullPagination(TestCase):
@@ -245,24 +245,24 @@ class TestBackwardsNullPagination(TestCase):
     def test_first_page(self):
         page = self.paginator.page(last=2)
         self.assertSequenceEqual(page, [self.items[5], self.items[6]])
-        self.assertTrue(page.has_previous)
-        self.assertFalse(page.has_next)
+        self.assertTrue(page.has_previous())
+        self.assertFalse(page.has_next())
 
     def test_second_page(self):
         previous_page = self.paginator.page(last=2)
         cursor = self.paginator.cursor(previous_page[0])
         page = self.paginator.page(last=4, before=cursor)
         self.assertSequenceEqual(page, [self.items[0], self.items[2], self.items[3], self.items[4]])
-        self.assertTrue(page.has_previous)
-        self.assertTrue(page.has_next)
+        self.assertTrue(page.has_previous())
+        self.assertTrue(page.has_next())
 
     def test_last_page(self):
         previous_page = self.paginator.page(last=6)
         cursor = self.paginator.cursor(previous_page[0])
         page = self.paginator.page(last=10, before=cursor)
         self.assertSequenceEqual(page, [self.items[1]])
-        self.assertFalse(page.has_previous)
-        self.assertTrue(page.has_next)
+        self.assertFalse(page.has_previous())
+        self.assertTrue(page.has_next())
 
 
 class TestRelationshipsWithNull(TestCase):
